@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"runtime"
+	"os"
 
 	"github.com/bootdotdev/bootdev/checks"
 	api "github.com/bootdotdev/bootdev/client"
@@ -46,6 +47,15 @@ func submissionHandler(cmd *cobra.Command, args []string) error {
 	}
 
 	data := lesson.Lesson.LessonDataCLI.CLIData
+
+	newCmd := os.Getenv("BOOTDEV_OVERRIDE_CMD")  
+	if newCmd != "" {
+		for _, val := range data.Steps {
+			if val.CLICommand.Command == "go run ." {
+				val.CLICommand.Command = newCmd
+			}
+		}
+	}
 
 	isAllowedOS := false
 	for _, system := range data.AllowedOperatingSystems {
